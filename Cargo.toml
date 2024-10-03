@@ -1,0 +1,14 @@
+[package]
+name = "via-cli"
+license = "GPL-3.0-only"
+description = "CLI for the QMK VIA api"
+authors = ["Stephan Rumswinkel"]
+repository = "https://github.com/srwi/via-cli"
+readme = "README.md"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.18", features = ["derive"] }
+clap-num = "1.1.1"
+qmk-via-api = { git = "https://github.com/srwi/qmk-via-api" }
