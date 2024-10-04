@@ -255,9 +255,14 @@ fn print_result<T: std::fmt::Debug>(result: Option<T>) {
 }
 
 fn main() {
-    // TODO: Add dry run that prints the bytes that would be sent to the device
     let app = App::parse();
-    let api = KeyboardApi::new(app.vid, app.pid, app.usage_page);
+    let api = match KeyboardApi::new(app.vid, app.pid, app.usage_page) {
+        Ok(api) => api,
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            std::process::exit(1);
+        }
+    };
 
     match app.command {
         Command::GetProtocolVersion => {

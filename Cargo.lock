@@ -395,8 +395,8 @@ dependencies = [
 
 [[package]]
 name = "qmk-via-api"
-version = "0.0.2"
-source = "git+https://github.com/srwi/qmk-via-api#8cbd57dcb92cc75c1e48dff117297ddfdbae3fae"
+version = "0.1.0"
+source = "git+https://github.com/srwi/qmk-via-api#996a649a9472b0749c10837d98ac603cbd9d4fe5"
 dependencies = [
  "hidapi",
  "itertools",
