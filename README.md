@@ -7,6 +7,11 @@ A command-line interface (CLI) for the [VIA API](https://github.com/srwi/qmk-via
 
 ## Usage
 
+> [!NOTE]
+> To run `via-cli` on Linux, you need to have `libudev` installed.
+
+Keycodes are displayed in decimal format by default. They can be provided in either decimal or hexadecimal format (prefixed with `0x`).
+
 ```
 Usage: via-cli [OPTIONS] --vid <VID> --pid <PID> <COMMAND>
 
@@ -53,25 +58,25 @@ Options:
 
 ## Examples
 
-Get decimal keycode of row 2, column 7 on layer 0:
+Get decimal keycode of row 2 and column 7 on layer 0:
 
-```sh
-❯ via-cli get-key -h
+```console
+$ via-cli get-key -h
 Get a key from a specific layer, row, and column
 
 Usage: via-cli --vid <VID> --pid <PID> get-key <LAYER> <ROW> <COLUMN>
 
-❯ via-cli --vid 0x594D --pid 0x604D get-key 0 2 7
+$ via-cli --vid 0x594D --pid 0x604D get-key 0 2 7
 13
 ```
 
 Write keymap for a keyboard with 4 rows and 12 columns:
 
-```sh
-❯ via-cli write-raw-matrix -h
+```console
+$ via-cli write-raw-matrix -h
 Write the raw matrix
 
 Usage: via-cli --vid <VID> --pid <PID> write-raw-matrix <ROWS> <COLS> [KEYMAP]...
 
-❯ via-cli --vid 0x594D --pid 0x604D write-raw-matrix 4 12 41,30,31,...,231,228,0
+$ via-cli --vid 0x594D --pid 0x604D write-raw-matrix 4 12 41,30,31,...,231,228,0
 ```
