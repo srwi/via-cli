@@ -16,6 +16,8 @@ Keycodes are displayed in decimal format by default. They can be provided in eit
 Usage: via-cli [OPTIONS] --vid <VID> --pid <PID> <COMMAND>
 
 Commands:
+  send-raw-data           Send raw byte data (up to 32 bytes)
+  receive-raw-data        Receive raw byte data (32 bytes)
   get-protocol-version    Get the protocol version
   get-layer-count         Get the layer count
   get-key                 Get a key from a specific layer, row, and column

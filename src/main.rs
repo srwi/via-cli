@@ -23,6 +23,12 @@ pub struct App {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Send raw byte data (up to 32 bytes)
+    SendRawData(SendDataArgs),
+
+    /// Receive raw byte data (32 bytes)
+    ReceiveRawData,
+
     /// Get the protocol version
     GetProtocolVersion,
 
@@ -112,6 +118,12 @@ enum Command {
 
     /// Reset macros
     ResetMacros,
+}
+
+#[derive(Debug, Args)]
+struct SendDataArgs {
+    #[clap(value_delimiter = ',', value_parser=maybe_hex::<u8>)]
+    data: Vec<u8>,
 }
 
 #[derive(Debug, Args)]
@@ -265,6 +277,12 @@ fn main() {
     };
 
     match app.command {
+        Command::SendRawData(args) => {
+            print_result(api.hid_send(args.data));
+        }
+        Command::ReceiveRawData => {
+            print_result(api.hid_read());
+        }
         Command::GetProtocolVersion => {
             print_result(api.get_protocol_version());
         }

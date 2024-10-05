@@ -5,7 +5,7 @@ description = "CLI for the QMK VIA api"
 authors = ["Stephan Rumswinkel"]
 repository = "https://github.com/srwi/via-cli"
 readme = "README.md"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
