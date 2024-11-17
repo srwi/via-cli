@@ -65,35 +65,86 @@ enum Command {
     /// Set a custom menu value
     SetCustomMenuValue(SetCustomMenuValueArgs),
 
-    /// Get the per-key RGB matrix
-    GetPerKeyRgbMatrix(GetPerKeyRgbMatrixArgs),
+    /// Save custom menu values for a specific channel
+    SaveCustomMenu(SaveCustomMenuArgs),
 
-    /// Set a per-key RGB matrix value
-    SetPerKeyRgbMatrix(SetPerKeyRgbMatrixArgs),
+    /// Get the backlight brightness
+    GetBacklightBrightness,
 
-    /// Get the current RGB mode
-    GetRgbMode,
+    /// Set the backlight brightness
+    SetBacklightBrightness(SetBacklightBrightnessArgs),
 
-    /// Get the current brightness
-    GetBrightness,
+    /// Get the backlight effect
+    GetBacklightEffect,
 
-    /// Get a color
-    GetColor(GetColorArgs),
+    /// Set the backlight effect
+    SetBacklightEffect(SetBacklightEffectArgs),
 
-    /// Set a color
-    SetColor(SetColorArgs),
+    /// Get the RGB light brightness
+    GetRgblightBrightness,
 
-    /// Get a custom color
-    GetCustomColor(GetCustomColorArgs),
+    /// Set the RGB light brightness
+    SetRgblightBrightness(SetRgblightBrightnessArgs),
 
-    /// Set a custom color
-    SetCustomColor(SetCustomColorArgs),
+    /// Get the RGB light effect
+    GetRgblightEffect,
 
-    /// Set the RGB mode
-    SetRgbMode(SetRgbModeArgs),
+    /// Set the RGB light effect
+    SetRgblightEffect(SetRgblightEffectArgs),
 
-    /// Commit custom menu changes
-    CommitCustomMenu(CommitCustomMenuArgs),
+    /// Get the RGB light effect speed
+    GetRgblightEffectSpeed,
+
+    /// Set the RGB light effect speed
+    SetRgblightEffectSpeed(SetRgblightEffectSpeedArgs),
+
+    /// Get the RGB light color
+    GetRgblightColor,
+
+    /// Set the RGB light color
+    SetRgblightColor(SetRgblightColorArgs),
+
+    /// Get the RGB matrix brightness
+    GetRgbMatrixBrightness,
+
+    /// Set the RGB matrix brightness
+    SetRgbMatrixBrightness(SetRgbMatrixBrightnessArgs),
+
+    /// Get the RGB matrix effect
+    GetRgbMatrixEffect,
+
+    /// Set the RGB matrix effect
+    SetRgbMatrixEffect(SetRgbMatrixEffectArgs),
+
+    /// Get the RGB matrix effect speed
+    GetRgbMatrixEffectSpeed,
+
+    /// Set the RGB matrix effect speed
+    SetRgbMatrixEffectSpeed(SetRgbMatrixEffectSpeedArgs),
+
+    /// Get the RGB matrix color
+    GetRgbMatrixColor,
+
+    /// Set the RGB matrix color
+    SetRgbMatrixColor(SetRgbMatrixColorArgs),
+
+    /// Get the LED matrix brightness
+    GetLedMatrixBrightness,
+
+    /// Set the LED matrix brightness
+    SetLedMatrixBrightness(SetLedMatrixBrightnessArgs),
+
+    /// Get the LED matrix effect
+    GetLedMatrixEffect,
+
+    /// Set the LED matrix effect
+    SetLedMatrixEffect(SetLedMatrixEffectArgs),
+
+    /// Get the LED matrix effect speed
+    GetLedMatrixEffectSpeed,
+
+    /// Set the LED matrix effect speed
+    SetLedMatrixEffectSpeed(SetLedMatrixEffectSpeedArgs),
 
     /// Save lighting configuration
     SaveLighting,
@@ -106,9 +157,6 @@ enum Command {
 
     /// Get the macro count
     GetMacroCount,
-
-    /// Get the macro buffer size
-    GetMacroBufferSize,
 
     /// Get the macro bytes
     GetMacroBytes,
@@ -203,49 +251,74 @@ struct SetCustomMenuValueArgs {
 }
 
 #[derive(Debug, Args)]
-struct GetPerKeyRgbMatrixArgs {
-    #[clap(value_delimiter = ',', value_parser=maybe_hex::<u8>)]
-    led_index_mapping: Vec<u8>,
+struct SetBacklightBrightnessArgs {
+    brightness: u8,
 }
 
 #[derive(Debug, Args)]
-struct SetPerKeyRgbMatrixArgs {
-    index: u8,
-    hue: u8,
-    sat: u8,
-}
-
-#[derive(Debug, Args)]
-struct GetColorArgs {
-    color_number: u8,
-}
-
-#[derive(Debug, Args)]
-struct SetColorArgs {
-    color_number: u8,
-    hue: u8,
-    sat: u8,
-}
-
-#[derive(Debug, Args)]
-struct GetCustomColorArgs {
-    color_number: u8,
-}
-
-#[derive(Debug, Args)]
-struct SetCustomColorArgs {
-    color_number: u8,
-    hue: u8,
-    sat: u8,
-}
-
-#[derive(Debug, Args)]
-struct SetRgbModeArgs {
+struct SetBacklightEffectArgs {
     effect: u8,
 }
 
 #[derive(Debug, Args)]
-struct CommitCustomMenuArgs {
+struct SetRgblightBrightnessArgs {
+    brightness: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetRgblightEffectArgs {
+    effect: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetRgblightEffectSpeedArgs {
+    speed: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetRgblightColorArgs {
+    hue: u8,
+    sat: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetRgbMatrixBrightnessArgs {
+    brightness: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetRgbMatrixEffectArgs {
+    effect: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetRgbMatrixEffectSpeedArgs {
+    speed: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetRgbMatrixColorArgs {
+    hue: u8,
+    sat: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetLedMatrixBrightnessArgs {
+    brightness: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetLedMatrixEffectArgs {
+    effect: u8,
+}
+
+#[derive(Debug, Args)]
+struct SetLedMatrixEffectSpeedArgs {
+    speed: u8,
+}
+
+#[derive(Debug, Args)]
+struct SaveCustomMenuArgs {
     channel: u8,
 }
 
@@ -336,35 +409,86 @@ fn main() {
         Command::SetCustomMenuValue(args) => {
             print_result(api.set_custom_menu_value(args.args));
         }
-        Command::GetPerKeyRgbMatrix(args) => {
-            print_result(api.get_per_key_rgb_matrix(args.led_index_mapping));
+        Command::SaveCustomMenu(args) => {
+            print_result(api.save_custom_menu(args.channel));
         }
-        Command::SetPerKeyRgbMatrix(args) => {
-            print_result(api.set_per_key_rgb_matrix(args.index, args.hue, args.sat));
+        Command::GetBacklightBrightness => {
+            print_result(api.get_backlight_brightness());
         }
-        Command::GetRgbMode => {
-            print_result(api.get_rgb_mode());
+        Command::SetBacklightBrightness(args) => {
+            print_result(api.set_backlight_brightness(args.brightness));
         }
-        Command::GetBrightness => {
-            print_result(api.get_brightness());
+        Command::GetBacklightEffect => {
+            print_result(api.get_backlight_effect());
         }
-        Command::GetColor(args) => {
-            print_result(api.get_color(args.color_number));
+        Command::SetBacklightEffect(args) => {
+            print_result(api.set_backlight_effect(args.effect));
         }
-        Command::SetColor(args) => {
-            print_result(api.set_color(args.color_number, args.hue, args.sat));
+        Command::GetRgblightBrightness => {
+            print_result(api.get_rgblight_brightness());
         }
-        Command::GetCustomColor(args) => {
-            print_result(api.get_custom_color(args.color_number));
+        Command::SetRgblightBrightness(args) => {
+            print_result(api.set_rgblight_brightness(args.brightness));
         }
-        Command::SetCustomColor(args) => {
-            print_result(api.set_custom_color(args.color_number, args.hue, args.sat));
+        Command::GetRgblightEffect => {
+            print_result(api.get_rgblight_effect());
         }
-        Command::SetRgbMode(args) => {
-            print_result(api.set_rgb_mode(args.effect));
+        Command::SetRgblightEffect(args) => {
+            print_result(api.set_rgblight_effect(args.effect));
         }
-        Command::CommitCustomMenu(args) => {
-            print_result(api.commit_custom_menu(args.channel));
+        Command::GetRgblightEffectSpeed => {
+            print_result(api.get_rgblight_effect_speed());
+        }
+        Command::SetRgblightEffectSpeed(args) => {
+            print_result(api.set_rgblight_effect_speed(args.speed));
+        }
+        Command::GetRgblightColor => {
+            print_result(api.get_rgblight_color());
+        }
+        Command::SetRgblightColor(args) => {
+            print_result(api.set_rgblight_color(args.hue, args.sat));
+        }
+        Command::GetRgbMatrixBrightness => {
+            print_result(api.get_rgb_matrix_brightness());
+        }
+        Command::SetRgbMatrixBrightness(args) => {
+            print_result(api.set_rgb_matrix_brightness(args.brightness));
+        }
+        Command::GetRgbMatrixEffect => {
+            print_result(api.get_rgb_matrix_effect());
+        }
+        Command::SetRgbMatrixEffect(args) => {
+            print_result(api.set_rgb_matrix_effect(args.effect));
+        }
+        Command::GetRgbMatrixEffectSpeed => {
+            print_result(api.get_rgb_matrix_effect_speed());
+        }
+        Command::SetRgbMatrixEffectSpeed(args) => {
+            print_result(api.set_rgb_matrix_effect_speed(args.speed));
+        }
+        Command::GetRgbMatrixColor => {
+            print_result(api.get_rgb_matrix_color());
+        }
+        Command::SetRgbMatrixColor(args) => {
+            print_result(api.set_rgb_matrix_color(args.hue, args.sat));
+        }
+        Command::GetLedMatrixBrightness => {
+            print_result(api.get_led_matrix_brightness());
+        }
+        Command::SetLedMatrixBrightness(args) => {
+            print_result(api.set_led_matrix_brightness(args.brightness));
+        }
+        Command::GetLedMatrixEffect => {
+            print_result(api.get_led_matrix_effect());
+        }
+        Command::SetLedMatrixEffect(args) => {
+            print_result(api.set_led_matrix_effect(args.effect));
+        }
+        Command::GetLedMatrixEffectSpeed => {
+            print_result(api.get_led_matrix_effect_speed());
+        }
+        Command::SetLedMatrixEffectSpeed(args) => {
+            print_result(api.set_led_matrix_effect_speed(args.speed));
         }
         Command::SaveLighting => {
             print_result(api.save_lighting());
@@ -377,9 +501,6 @@ fn main() {
         }
         Command::GetMacroCount => {
             print_result(api.get_macro_count());
-        }
-        Command::GetMacroBufferSize => {
-            print_result(api.get_macro_buffer_size());
         }
         Command::GetMacroBytes => {
             print_result(api.get_macro_bytes());

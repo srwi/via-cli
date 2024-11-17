@@ -1,6 +1,3 @@
-> [!WARNING]
-> `via-cli` is in early development and partly untested. Use at your own risk!
-
 # via-cli
 
 A command-line interface (CLI) for the [VIA API](https://github.com/srwi/qmk-via-api), designed for use with keyboards running the [QMK](https://github.com/qmk/qmk_firmware) (Quantum Mechanical Keyboard) firmware.
@@ -16,39 +13,55 @@ Keycodes are displayed in decimal format by default. They can be provided in eit
 Usage: via-cli [OPTIONS] --vid <VID> --pid <PID> <COMMAND>
 
 Commands:
-  send-raw-data           Send raw byte data (up to 32 bytes)
-  receive-raw-data        Receive raw byte data (32 bytes)
-  get-protocol-version    Get the protocol version
-  get-layer-count         Get the layer count
-  get-key                 Get a key from a specific layer, row, and column
-  set-key                 Set a key at a specific layer, row, and column
-  read-raw-matrix         Read the raw matrix for a specific layer
-  write-raw-matrix        Write the raw matrix
-  get-keyboard-value      Get a keyboard value
-  set-keyboard-value      Set a keyboard value
-  get-encoder-value       Get an encoder value
-  set-encoder-value       Set an encoder value
-  get-custom-menu-value   Get a custom menu value
-  set-custom-menu-value   Set a custom menu value
-  get-per-key-rgb-matrix  Get the per-key RGB matrix
-  set-per-key-rgb-matrix  Set a per-key RGB matrix value
-  get-rgb-mode            Get the current RGB mode
-  get-brightness          Get the current brightness
-  get-color               Get a color
-  set-color               Set a color
-  get-custom-color        Get a custom color
-  set-custom-color        Set a custom color
-  set-rgb-mode            Set the RGB mode
-  commit-custom-menu      Commit custom menu changes
-  save-lighting           Save lighting configuration
-  reset-eeprom            Reset EEPROM
-  jump-to-bootloader      Jump to bootloader
-  get-macro-count         Get the macro count
-  get-macro-buffer-size   Get the macro buffer size
-  get-macro-bytes         Get the macro bytes
-  set-macro-bytes         Set the macro bytes
-  reset-macros            Reset macros
-  help                    Print this message or the help of the given subcommand(s)
+  send-raw-data                Send raw byte data (up to 32 bytes)
+  receive-raw-data             Receive raw byte data (32 bytes)
+  get-protocol-version         Get the protocol version
+  get-layer-count              Get the layer count
+  get-key                      Get a key from a specific layer, row, and column
+  set-key                      Set a key at a specific layer, row, and column
+  read-raw-matrix              Read the raw matrix for a specific layer
+  write-raw-matrix             Write the raw matrix
+  get-keyboard-value           Get a keyboard value
+  set-keyboard-value           Set a keyboard value
+  get-encoder-value            Get an encoder value
+  set-encoder-value            Set an encoder value
+  get-custom-menu-value        Get a custom menu value
+  set-custom-menu-value        Set a custom menu value
+  save-custom-menu             Save custom menu values for a specific channel
+  get-backlight-brightness     Get the backlight brightness
+  set-backlight-brightness     Set the backlight brightness
+  get-backlight-effect         Get the backlight effect
+  set-backlight-effect         Set the backlight effect
+  get-rgblight-brightness      Get the RGB light brightness
+  set-rgblight-brightness      Set the RGB light brightness
+  get-rgblight-effect          Get the RGB light effect
+  set-rgblight-effect          Set the RGB light effect
+  get-rgblight-effect-speed    Get the RGB light effect speed
+  set-rgblight-effect-speed    Set the RGB light effect speed
+  get-rgblight-color           Get the RGB light color
+  set-rgblight-color           Set the RGB light color
+  get-rgb-matrix-brightness    Get the RGB matrix brightness
+  set-rgb-matrix-brightness    Set the RGB matrix brightness
+  get-rgb-matrix-effect        Get the RGB matrix effect
+  set-rgb-matrix-effect        Set the RGB matrix effect
+  get-rgb-matrix-effect-speed  Get the RGB matrix effect speed
+  set-rgb-matrix-effect-speed  Set the RGB matrix effect speed
+  get-rgb-matrix-color         Get the RGB matrix color
+  set-rgb-matrix-color         Set the RGB matrix color
+  get-led-matrix-brightness    Get the LED matrix brightness
+  set-led-matrix-brightness    Set the LED matrix brightness
+  get-led-matrix-effect        Get the LED matrix effect
+  set-led-matrix-effect        Set the LED matrix effect
+  get-led-matrix-effect-speed  Get the LED matrix effect speed
+  set-led-matrix-effect-speed  Set the LED matrix effect speed
+  save-lighting                Save lighting configuration
+  reset-eeprom                 Reset EEPROM
+  jump-to-bootloader           Jump to bootloader
+  get-macro-count              Get the macro count
+  get-macro-bytes              Get the macro bytes
+  set-macro-bytes              Set the macro bytes
+  reset-macros                 Reset macros
+  help                         Print this message or the help of the given subcommand(s)
 
 Options:
       --vid <VID>                Vendor ID
