@@ -11,4 +11,4 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.18", features = ["derive"] }
 clap-num = "1.1.1"
-qmk-via-api = "0.2.0"
+qmk-via-api = "0.2.1"
