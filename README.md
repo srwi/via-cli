@@ -61,6 +61,7 @@ Commands:
   get-macro-bytes              Get the macro bytes
   set-macro-bytes              Set the macro bytes
   reset-macros                 Reset macros
+  scan                         Scan and list connected VIA keyboards
   help                         Print this message or the help of the given subcommand(s)
 
 Options:
@@ -72,6 +73,17 @@ Options:
 ```
 
 ## Examples
+
+Scan for connected VIA devices:
+
+```console
+$ via-cli scan
++------+------+-------+----+-------+------+--------+-----+
+| VID  | PID  | Usage | IF | Proto | Mfg  | Prod   | Ser |
++------+------+-------+----+-------+------+--------+-----+
+| 7372 | 0003 | ff60  | 1  | 12    | srwi | Lily58 |     |
++------+------+-------+----+-------+------+--------+-----+
+```
 
 Get decimal keycode of row 2 and column 7 on layer 0:
 

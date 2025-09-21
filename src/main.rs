@@ -1,6 +1,8 @@
 use clap::{Args, Parser, Subcommand};
 use clap_num::maybe_hex;
+use cli_table::{print_stdout, Table};
 use qmk_via_api::api::{KeyboardApi, KeyboardValue, Layer, MatrixInfo};
+use qmk_via_api::scan;
 
 #[derive(Debug, Parser)]
 #[clap(name = "via-cli", version = env!("CARGO_PKG_VERSION"))]
@@ -10,13 +12,13 @@ pub struct App {
 
     /// Vendor ID
     #[clap(long, value_parser=maybe_hex::<u16>)]
-    vid: u16,
+    vid: Option<u16>,
 
     /// Product ID
     #[clap(long, value_parser=maybe_hex::<u16>)]
-    pid: u16,
+    pid: Option<u16>,
 
-    /// Usage page
+    /// Usage page (defaults to 0xFF60)
     #[clap(long, value_parser=maybe_hex::<u16>, default_value_t = 0xff60)]
     usage_page: u16,
 }
@@ -166,6 +168,9 @@ enum Command {
 
     /// Reset macros
     ResetMacros,
+
+    /// Scan and list connected VIA keyboards
+    Scan,
 }
 
 #[derive(Debug, Args)]
@@ -339,36 +344,53 @@ fn print_result<T: std::fmt::Debug>(result: Option<T>) {
     }
 }
 
-fn main() {
-    let app = App::parse();
-    let api = match KeyboardApi::new(app.vid, app.pid, app.usage_page) {
+fn get_api(vid: Option<u16>, pid: Option<u16>, usage_page: u16) -> KeyboardApi {
+    let (v, p) = match (vid, pid) {
+        (Some(v), Some(p)) => (v, p),
+        _ => {
+            eprintln!("--vid and --pid are required for this command. Use 'via-cli scan' to list connected devices.");
+            std::process::exit(2);
+        }
+    };
+    match KeyboardApi::new(v, p, usage_page) {
         Ok(api) => api,
         Err(err) => {
             eprintln!("Error: {}", err);
             std::process::exit(1);
         }
-    };
+    }
+}
+
+fn main() {
+    let app = App::parse();
 
     match app.command {
         Command::SendRawData(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.hid_send(args.data));
         }
         Command::ReceiveRawData => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.hid_read());
         }
         Command::GetProtocolVersion => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_protocol_version());
         }
         Command::GetLayerCount => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_layer_count());
         }
         Command::GetKey(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_key(args.layer, args.row, args.column));
         }
         Command::SetKey(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_key(args.layer, args.row, args.column, args.value));
         }
         Command::ReadRawMatrix(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             let matrix_info = MatrixInfo {
                 rows: args.rows,
                 cols: args.cols,
@@ -376,6 +398,7 @@ fn main() {
             print_result(api.read_raw_matrix(matrix_info, args.layer));
         }
         Command::WriteRawMatrix(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             let keymap: Vec<Vec<u16>> =
                 args.keymap.chunks(16).map(|chunk| chunk.to_vec()).collect();
             print_result(api.write_raw_matrix(
@@ -387,15 +410,19 @@ fn main() {
             ));
         }
         Command::GetKeyboardValue(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_keyboard_value(args.command, args.parameters, args.result_length));
         }
         Command::SetKeyboardValue(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_keyboard_value(args.command, args.parameters));
         }
         Command::GetEncoderValue(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_encoder_value(args.layer, args.id, args.is_clockwise));
         }
         Command::SetEncoderValue(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_encoder_value(
                 args.layer,
                 args.id,
@@ -404,112 +431,177 @@ fn main() {
             ));
         }
         Command::GetCustomMenuValue(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_custom_menu_value(args.command_bytes));
         }
         Command::SetCustomMenuValue(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_custom_menu_value(args.args));
         }
         Command::SaveCustomMenu(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.save_custom_menu(args.channel));
         }
         Command::GetBacklightBrightness => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_backlight_brightness());
         }
         Command::SetBacklightBrightness(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_backlight_brightness(args.brightness));
         }
         Command::GetBacklightEffect => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_backlight_effect());
         }
         Command::SetBacklightEffect(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_backlight_effect(args.effect));
         }
         Command::GetRgblightBrightness => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgblight_brightness());
         }
         Command::SetRgblightBrightness(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgblight_brightness(args.brightness));
         }
         Command::GetRgblightEffect => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgblight_effect());
         }
         Command::SetRgblightEffect(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgblight_effect(args.effect));
         }
         Command::GetRgblightEffectSpeed => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgblight_effect_speed());
         }
         Command::SetRgblightEffectSpeed(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgblight_effect_speed(args.speed));
         }
         Command::GetRgblightColor => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgblight_color());
         }
         Command::SetRgblightColor(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgblight_color(args.hue, args.sat));
         }
         Command::GetRgbMatrixBrightness => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgb_matrix_brightness());
         }
         Command::SetRgbMatrixBrightness(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgb_matrix_brightness(args.brightness));
         }
         Command::GetRgbMatrixEffect => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgb_matrix_effect());
         }
         Command::SetRgbMatrixEffect(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgb_matrix_effect(args.effect));
         }
         Command::GetRgbMatrixEffectSpeed => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgb_matrix_effect_speed());
         }
         Command::SetRgbMatrixEffectSpeed(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgb_matrix_effect_speed(args.speed));
         }
         Command::GetRgbMatrixColor => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_rgb_matrix_color());
         }
         Command::SetRgbMatrixColor(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_rgb_matrix_color(args.hue, args.sat));
         }
         Command::GetLedMatrixBrightness => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_led_matrix_brightness());
         }
         Command::SetLedMatrixBrightness(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_led_matrix_brightness(args.brightness));
         }
         Command::GetLedMatrixEffect => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_led_matrix_effect());
         }
         Command::SetLedMatrixEffect(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_led_matrix_effect(args.effect));
         }
         Command::GetLedMatrixEffectSpeed => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_led_matrix_effect_speed());
         }
         Command::SetLedMatrixEffectSpeed(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_led_matrix_effect_speed(args.speed));
         }
         Command::SaveLighting => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.save_lighting());
         }
         Command::ResetEeprom => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.reset_eeprom());
         }
         Command::JumpToBootloader => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.jump_to_bootloader());
         }
         Command::GetMacroCount => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_macro_count());
         }
         Command::GetMacroBytes => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.get_macro_bytes());
         }
         Command::SetMacroBytes(args) => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.set_macro_bytes(args.data));
         }
         Command::ResetMacros => {
+            let api = get_api(app.vid, app.pid, app.usage_page);
             print_result(api.reset_macros());
+        }
+        Command::Scan => {
+            let devices = scan::scan_keyboards();
+            if devices.is_empty() {
+                println!("No VIA devices found.");
+            } else {
+                let rows: Vec<Vec<String>> = devices
+                    .iter()
+                    .map(|device| {
+                        vec![
+                            format!("{:04x}", device.vendor_id),
+                            format!("{:04x}", device.product_id),
+                            format!("{:04x}", device.usage_page),
+                            device.manufacturer.clone().unwrap_or_default(),
+                            device.product.clone().unwrap_or_default(),
+                            device.serial_number.clone().unwrap_or_default(),
+                        ]
+                    })
+                    .collect();
+                let table = rows.table().title(vec![
+                    "VID",
+                    "PID",
+                    "Usage",
+                    "Manufacturer",
+                    "Product",
+                    "Serial",
+                ]);
+                print_stdout(table).unwrap();
+            }
         }
     }
 }
