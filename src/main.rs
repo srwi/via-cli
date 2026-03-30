@@ -333,14 +333,17 @@ struct SetMacroBytesArgs {
     data: Vec<u8>,
 }
 
-fn print_result<T: std::fmt::Debug>(result: Option<T>) {
+fn print_result<T: std::fmt::Debug>(result: qmk_via_api::Result<T>) {
     match result {
-        Some(value) => {
+        Ok(value) => {
             if std::any::type_name::<T>() != "()" {
                 println!("{:?}", value);
             }
         }
-        None => eprintln!("Command rejected by device."),
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            std::process::exit(1);
+        }
     }
 }
 
@@ -575,7 +578,13 @@ fn main() {
             print_result(api.reset_macros());
         }
         Command::Scan => {
-            let devices = scan::scan_keyboards();
+            let devices = match scan::scan_keyboards() {
+                Ok(devices) => devices,
+                Err(err) => {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                }
+            };
             if devices.is_empty() {
                 println!("No VIA devices found.");
             } else {
